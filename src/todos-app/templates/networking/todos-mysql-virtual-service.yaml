@@ -1,0 +1,22 @@
+{{ if and .Values.istio.enabled .Values.istio.gateway.enabled  }}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "todos.mysql.name" . }}
+  labels:
+  {{- include "todos.mysql.labels" . | nindent 4 }}
+spec:
+  hosts:
+  {{ toYaml .Values.istio.gateway.hosts }}
+  gateways:
+    - {{ .Values.istio.gateway.name }}
+  http:
+    - match:
+        - uri:
+            prefix: /todos
+      route:
+        - destination:
+            host: {{ include "todos.mysql.name" . }}.{{ .Release.Namespace }}.svc.cluster.local
+            port:
+              number: {{ .Values.todos.mysql.services.internal.port }}
+{{ end }}

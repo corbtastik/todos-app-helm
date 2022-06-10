@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todos.webui.name" . }}
+  labels:
+    {{- include "todos.webui.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.todos.webui.services.internal.type }}
+  ports:
+    - name: {{ .Values.todos.webui.services.internal.name }}
+      protocol: {{ .Values.todos.webui.services.internal.protocol }}
+      targetPort: {{ .Values.todos.webui.services.internal.targetPort }}
+      port: {{ .Values.todos.webui.services.internal.port }}
+  selector:
+    {{- include "todos.webui.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,17 @@
+{{ if and .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "todos.db.name" . }}
+  labels:
+  {{- include "todos.db.labels" . | nindent 4 }}
+spec:
+  hosts:
+    - {{ include "todos.db.name" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  tcp:
+    - route:
+        - destination:
+            host: {{ include "todos.db.name" . }}.{{ .Release.Namespace }}.svc.cluster.local
+            port:
+              number: {{ .Values.todos.db.services.internal.port }}
+{{ end }}

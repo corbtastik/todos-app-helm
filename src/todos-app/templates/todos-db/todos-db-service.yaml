@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todos.db.name" . }}
+  labels:
+  {{- include "todos.db.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.todos.db.services.internal.type }}
+  ports:
+    - port: {{ .Values.todos.db.services.internal.port }}
+      targetPort: {{ .Values.todos.db.services.internal.port }}
+      protocol: TCP
+      name: tcp
+  selector:
+  {{- include "todos.db.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todos.webui.name" . }}
+  labels:
+    {{- include "todos.webui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.todos.webui.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "todos.webui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.todos.webui.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "todos.webui.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.todos.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "todos.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.todos.webui.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.todos.webui.name }}
+          securityContext:
+            {{- toYaml .Values.todos.webui.securityContext | nindent 12 }}
+          image: {{ .Values.todos.webui.image.repository }}:{{ .Values.todos.webui.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.todos.webui.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "todos.webui.name" . }}
+                optional: true
+          ports:
+            - name: http
+              containerPort: {{ .Values.todos.webui.services.internal.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.todos.webui.livenessPath }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.todos.webui.readinessPath }}
+              port: http
+          resources:
+            {{- toYaml .Values.todos.webui.resources | nindent 12 }}
