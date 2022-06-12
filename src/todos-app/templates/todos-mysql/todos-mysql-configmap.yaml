@@ -6,5 +6,5 @@ metadata:
   {{- include "todos.mysql.labels" . | nindent 4 }}
 data:
   SPRING_PROFILES_ACTIVE: mysql
-  MYSQL_DATABASE: todos
+  MYSQL_DATABASE: {{ .Values.todos.mysql.envs.database | quote }}
   MYSQL_HOST: {{ include "todos.db.name" . }}.{{ .Release.Namespace }}.svc.cluster.local

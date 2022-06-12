@@ -5,5 +5,5 @@ metadata:
   labels:
     {{- include "todos.webui.labels" . | nindent 4 }}
 data:
-  TODOS_WEBUI_PLACEHOLDER: {{ .Values.todos.webui.placeholder | quote }}
-  SPRING_SECURITY_USER_NAME: {{ .Values.todos.webui.username | quote }}
+  TODOS_WEBUI_PLACEHOLDER: {{ .Values.todos.webui.envs.placeholder | quote }}
+  SPRING_SECURITY_USER_NAME: {{ .Values.todos.webui.envs.username | quote }}

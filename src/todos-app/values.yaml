@@ -6,7 +6,6 @@ system: todos
 istio:
   enabled: false
   gateway:
-    enabled: false
     name: todos-gateway
     hosts:
       - "todos.apps-crc.testing"
@@ -42,8 +41,9 @@ todos:
       repository: quay.io/corbsmartin/todos-webui
       tag: 1.0.0
       pullPolicy: Always
-    username: "Sponge Bob"
-    placeholder: "Make 1000 crabby patties"
+    envs:
+      username: "Sponge Bob"
+      placeholder: "Make some crabby patties"
     livenessPath: "/actuator/health/liveness"
     readinessPath: "/actuator/health/readiness"
   mysql:
@@ -73,6 +73,11 @@ todos:
       repository: quay.io/corbsmartin/todos-mysql
       tag: 1.0.0
       pullPolicy: Always
+    envs:
+      database: todos
+    secrets:
+      user: dXNlcjE=
+      password:
     livenessPath: "/actuator/health/liveness"
     readinessPath: "/actuator/health/readiness"
   db:
