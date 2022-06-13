@@ -77,7 +77,7 @@ todos:
       database: todos
     secrets:
       user: dXNlcjE=
-      password:
+      password: bXlzcWwxMjM=
     livenessPath: "/actuator/health/liveness"
     readinessPath: "/actuator/health/readiness"
   db:
