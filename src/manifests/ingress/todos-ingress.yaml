@@ -1,0 +1,35 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: todos-mysql-route
+spec:
+  host: todos.apps-crc.testing
+  path: /todos
+  to:
+    kind: Service
+    name: todos-mysql
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: todos-webui-route
+spec:
+  host: todos.apps-crc.testing
+  to:
+    kind: Service
+    name: todos-webui
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

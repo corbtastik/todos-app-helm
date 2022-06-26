@@ -1,0 +1,87 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: todos-gateway
+  labels:
+    app.kubernetes.io/name: todos-gateway
+    app.kubernetes.io/version: 1.0.0
+    app: todos-gateway
+    version: 1.0.0
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - todos.apps-crc.testing
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: todos-db
+  labels:
+    app.kubernetes.io/name: todos-db
+    app.kubernetes.io/version: 1.0.0
+    app: todos-db
+    version: 1.0.0
+spec:
+  hosts:
+    - todos-db
+  tcp:
+    - route:
+        - destination:
+            host: todos-db
+            port:
+              number: 3306
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: todos-mysql
+  labels:
+    app.kubernetes.io/name: todos-mysql
+    app.kubernetes.io/version: 1.0.0
+    app: todos-mysql
+    version: 1.0.0
+spec:
+  hosts:
+    - todos.apps-crc.testing
+  gateways:
+    - todos-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /todos
+      route:
+        - destination:
+            host: todos-mysql
+            port:
+              number: 8080
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: todos-webui
+  labels:
+    app.kubernetes.io/name: todos-webui
+    app.kubernetes.io/version: 1.0.0
+    app: todos-webui
+    version: 1.0.0
+spec:
+  hosts:
+    - todos.apps-crc.testing
+  gateways:
+    - todos-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: todos-webui
+            port:
+              number: 8080
