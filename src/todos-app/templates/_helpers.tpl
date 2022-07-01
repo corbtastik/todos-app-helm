@@ -19,7 +19,7 @@ app.kubernetes.io/region: {{ .Values.cluster.region }}
 
 {{/* Name of todos system. */}}
 {{- define "todos.name" -}}
-{{- .Values.system | trunc 63 }}
+{{- .Values.system.name | trunc 63 }}
 {{- end }}
 
 {{/* All labels for todos apps, includes selector labels */}}
@@ -99,4 +99,36 @@ app.kubernetes.io/name: {{ include "todos.db.name" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion }}
 app: {{ include "todos.db.name" . }}
 version: {{ .Chart.AppVersion }}
+{{- end }}
+
+{{- define "route.name" -}}
+{{- .Values.route.name | trunc 63 }}
+{{- end }}
+
+{{- define "route.labels" -}}
+helm.sh/chart: {{ include "todos.chart" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ include "cluster.labels" . }}
+{{ include "route.selectorLabels" . }}
+{{- end }}
+
+{{- define "route.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "route.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/part-of: {{ .Values.system.name }}
+{{- if .Values.system.version }}
+app.kubernetes.io/version: {{ .Values.system.version }}
+{{- else }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+{{ include "route.simpleLabels" . }}
+{{- end }}
+
+{{- define "route.simpleLabels" -}}
+app: {{ include "route.name" . }}
+{{- if .Values.system.version }}
+version: {{ .Values.system.version }}
+{{- else }}
+version: {{ .Chart.AppVersion | quote }}
+{{- end }}
 {{- end }}

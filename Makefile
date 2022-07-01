@@ -27,6 +27,16 @@ install:
 		--set route.host="$(INGRESS_URL)" \
 		todos-$(RELEASE) src/todos-app
 
+template:
+	@mkdir -p ./src/manifests/todos-$(RELEASE)
+	@helm template --namespace $(APP_NAMESPACE) \
+		--set cluster.name=$(CLUSTER_NAME) \
+		--set cluster.region=$(CLUSTER_REGION) \
+		--set istio.enabled=false \
+		--set route.enabled=true \
+		--set route.host="$(INGRESS_URL)" \
+		todos-$(RELEASE) src/todos-app > src/manifests/todos-$(RELEASE)/todos-$(RELEASE).yaml
+
 # Install using istio service mesh networking
 install-istio:
 	@helm install --namespace $(APP_NAMESPACE) \
