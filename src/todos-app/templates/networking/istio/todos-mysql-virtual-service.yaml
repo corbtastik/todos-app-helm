@@ -1,10 +1,11 @@
 {{ if .Values.istio.enabled }}
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "todos.webui.name" . }}
+  name: {{ include "todos.mysql.name" . }}
   labels:
-  {{- include "todos.webui.labels" . | nindent 4 }}
+  {{- include "todos.mysql.labels" . | nindent 4 }}
 spec:
   hosts:
   {{ toYaml .Values.istio.gateway.hosts }}
@@ -13,10 +14,10 @@ spec:
   http:
     - match:
         - uri:
-            prefix: /
+            prefix: /todos
       route:
         - destination:
-            host: {{ include "todos.webui.name" . }}.{{ .Release.Namespace }}.svc.cluster.local
+            host: {{ include "todos.mysql.name" . }}.{{ .Release.Namespace }}.svc.cluster.local
             port:
-              number: {{ .Values.todos.webui.services.internal.port }}
+              number: {{ .Values.todos.mysql.services.internal.port }}
 {{ end }}

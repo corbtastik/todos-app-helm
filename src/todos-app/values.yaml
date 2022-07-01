@@ -1,14 +1,56 @@
-# Default values for todos components
-system: todos
-# -------------------------------------------------------------------------------------------------
-# Istio Gateway variables
-# -------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+# System level properties
+# ----------------------------------------------------------------------------------------------------------------------
+system:
+  name: todos
+  version: 1.0.0
+# ----------------------------------------------------------------------------------------------------------------------
+# OPC cluster properties
+# ----------------------------------------------------------------------------------------------------------------------
+cluster:
+  name: crc.testing
+  region: local
+# ----------------------------------------------------------------------------------------------------------------------
+# OpenShift service mesh (aka istio) properties
+#   NOTE:
+#   1) istio.gateway.hosts must match route.host
+# ----------------------------------------------------------------------------------------------------------------------
 istio:
-  enabled: false
+  enabled: true
   gateway:
     name: todos-gateway
+    selector: ingressgateway
     hosts:
       - "todos.apps-crc.testing"
+    tls:
+      enabled: false
+      mode: SIMPLE
+      credentialName: istio-certs
+      httpsRedirect: true
+      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
+      privateKey: /etc/istio/ingressgateway-certs/tls.key
+      caCertificates: /etc/istio/ingressgateway-ca-certs/ca-chain.cert.pem
+  virtualservice:
+    name: todos
+# ----------------------------------------------------------------------------------------------------------------------
+# OpenShift ingress route for the service mesh gateway
+#   NOTE:
+#   1) route.host must match istio.gateway.hosts
+# ----------------------------------------------------------------------------------------------------------------------
+route:
+  enabled: false
+  name: todos
+  namespace: istio-system
+  host: todos.apps-crc.testing
+  targetPort: http
+  wildcard:
+    policy: None
+  tls:
+    termination: edge
+    insecurePolicy: Redirect
+# ----------------------------------------------------------------------------------------------------------------------
+# Todos application properties
+# ----------------------------------------------------------------------------------------------------------------------
 todos:
   imagePullSecrets: []
   serviceAccount:
@@ -39,11 +81,11 @@ todos:
         targetPort: 8080
     image:
       repository: quay.io/corbsmartin/todos-webui
-      tag: 1.0.0
+      tag: 1.0.2
       pullPolicy: Always
     envs:
-      username: "Sponge Bob"
-      placeholder: "Make some crabby patties"
+      username: "User1"
+      placeholder: "What shall you do today?"
     livenessPath: "/actuator/health/liveness"
     readinessPath: "/actuator/health/readiness"
   mysql:

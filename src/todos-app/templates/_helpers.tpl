@@ -1,6 +1,15 @@
-{{/* Name of composite chart for todos apps */}}
+{{/* Top level system name this chart is associated with */}}
+{{- define "system.name" -}}
+{{- .Values.system.name | trunc 63 }}
+{{- end }}
+
 {{- define "todos.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{- define "cluster.labels" -}}
+app.kubernetes.io/cluster: {{ .Values.cluster.name }}
+app.kubernetes.io/region: {{ .Values.cluster.region }}
 {{- end }}
 
 {{/* Name of the todos service account to use */}}

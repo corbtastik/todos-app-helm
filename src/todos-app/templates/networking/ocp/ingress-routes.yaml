@@ -1,0 +1,43 @@
+{{ if .Values.route.enabled }}
+{{ if not .Values.istio.enabled }}
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ include "todos.webui.name" . }}
+  labels:
+    {{- include "route.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  to:
+    kind: Service
+    name: {{ include "todos.webui.name" . }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.route.targetPort | quote }}
+  tls:
+    termination: {{ .Values.route.tls.termination | quote }}
+    insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecurePolicy | quote }}
+  wildcardPolicy: {{ .Values.route.wildcard.policy | quote }}
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ include "todos.mysql.name" . }}
+  labels:
+    {{- include "route.labels" . | nindent 4 }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  path: /todos
+  to:
+    kind: Service
+    name: {{ include "todos.mysql.name" . }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.route.targetPort | quote }}
+  tls:
+    termination: {{ .Values.route.tls.termination | quote }}
+    insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecurePolicy | quote }}
+  wildcardPolicy: {{ .Values.route.wildcard.policy | quote }}
+{{ end }}
+{{ end }}

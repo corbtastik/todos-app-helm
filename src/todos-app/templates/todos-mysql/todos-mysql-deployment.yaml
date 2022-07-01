@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,6 +41,12 @@ spec:
             - name: http
               containerPort: {{ .Values.todos.mysql.services.internal.port }}
               protocol: TCP
+          startupProbe:
+            httpGet:
+              path: {{ .Values.todos.mysql.livenessPath }}
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: {{ .Values.todos.mysql.livenessPath }}

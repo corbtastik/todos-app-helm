@@ -1,0 +1,85 @@
+---
+# Source: todos-app/templates/networking/gateway.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: todos-gateway
+  labels:
+    helm.sh/chart: todos-app-0.1.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/cluster: crc.testing
+    app.kubernetes.io/region: local
+    app.kubernetes.io/name: todos-gateway
+    app.kubernetes.io/instance: todos-v1
+    app.kubernetes.io/part-of: sample-todos
+    app.kubernetes.io/version: 1.0.0
+    app: todos-gateway
+    version: 1.0.0
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - todos-istio-system.apps.ocp1-dev.pdc.thriveai.kp.org
+      port:
+        name: http2
+        number: 80
+        protocol: HTTP2
+---
+# Source: todos-app/templates/networking/todos-webui-virtual-service.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: todos-app
+  labels:
+    helm.sh/chart: todos-app-0.1.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: todos-v1
+    app.kubernetes.io/name: todos-app
+    app.kubernetes.io/version: 1.0.0
+    app: todos-app
+    version: 1.0.0
+spec:
+  hosts:
+    - todos-istio-system.apps.ocp1-dev.pdc.thriveai.kp.org
+  gateways:
+    - todos-gateway
+  http:
+    - name: "api-route"
+      match:
+        - uri:
+            prefix: /todos
+      route:
+        - destination:
+            host: todos-mysql
+            port:
+              number: 8080
+    - name: "all-route"
+      route:
+        - destination:
+            host: todos-webui
+            port:
+              number: 8080
+---
+# Source: todos-app/templates/networking/todos-db-virtual-service.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: todos-db
+  labels:
+    helm.sh/chart: todos-app-0.1.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: todos-v1
+    app.kubernetes.io/name: todos-db
+    app.kubernetes.io/version: 1.0.0
+    app: todos-db
+    version: 1.0.0
+spec:
+  hosts:
+    - todos-db.sample-todos.svc.cluster.local
+  tcp:
+    - route:
+        - destination:
+            host: todos-db.sample-todos.svc.cluster.local
+            port:
+              number: 3306

@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: todos-sa
+  labels:
+    app: todos-webui
+    version: 1.0.1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todos-webui
+  labels:
+    app: todos-webui
+    version: 1.0.1
+data:
+  TODOS_WEBUI_PLACEHOLDER: "Make some crabby patties"
+  SPRING_SECURITY_USER_NAME: "Sponge Bob"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todos-webui
+  labels:
+    app: todos-webui
+    version: 1.0.1
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      targetPort: 8080
+      port: 8080
+  selector:
+    app: todos-webui
+    version: 1.0.1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todos-webui
+  labels:
+    app: todos-webui
+    version: 1.0.1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todos-webui
+      version: 1.0.1
+  template:
+    metadata:
+      labels:
+        app: todos-webui
+        version: 1.0.1
+    spec:
+      serviceAccountName: todos-sa
+      containers:
+        - name: todos-webui
+          image: quay.io/corbsmartin/todos-webui:1.0.1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: todos-webui
+                optional: true
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
