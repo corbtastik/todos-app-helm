@@ -60,8 +60,8 @@ metadata:
     app: todos-webui
     version: 1.0.0
 data:
-  TODOS_WEBUI_PLACEHOLDER: "Do something?"
-  SPRING_SECURITY_USER_NAME: "User1"
+  TODOS_WEBUI_PLACEHOLDER: "Make dinner or something?"
+  SPRING_SECURITY_USER_NAME: "Sponge Bob"
 ---
 apiVersion: v1
 kind: Service
