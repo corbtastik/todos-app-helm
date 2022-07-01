@@ -4,7 +4,7 @@ kind: Route
 metadata:
   name: todos
 spec:
-  host: todos-app-istio-system.apps.ocp1-dev.pdc.thriveai.kp.org
+  host: todos.apps-crc.testing
   port:
     targetPort: http2
   tls:

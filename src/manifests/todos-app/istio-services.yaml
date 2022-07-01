@@ -20,7 +20,7 @@ spec:
     istio: ingressgateway
   servers:
     - hosts:
-        - todos-istio-system.apps.ocp1-dev.pdc.thriveai.kp.org
+        - todos.apps-crc.testing
       port:
         name: http2
         number: 80
@@ -41,7 +41,7 @@ metadata:
     version: 1.0.0
 spec:
   hosts:
-    - todos-istio-system.apps.ocp1-dev.pdc.thriveai.kp.org
+    - todos.apps-crc.testing
   gateways:
     - todos-gateway
   http:
