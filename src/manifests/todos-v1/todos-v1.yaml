@@ -222,7 +222,7 @@ spec:
       serviceAccountName: todos-sa
       containers:
         - name: todos-webui
-          image: quay.io/corbsmartin/todos-webui:1.0.1
+          image: quay.io/corbsmartin/todos-webui:1.0.2
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
