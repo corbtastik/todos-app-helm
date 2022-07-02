@@ -117,3 +117,16 @@ insert-records:
 		`oc get pods --template "{{range .items}}{{.metadata.name}}{{end}}" --selector=app=todos-db -n $(APP_NAMESPACE)` \
 		--container=todos-db -- /bin/bash -c \
 		'mysql -uuser1 -pmysql123 -e "INSERT INTO todos.todos(id, title, complete) VALUE (2002, \"Take kids to school.\", FALSE);"'
+
+# =============================================================================
+# Targets for working with argocd
+# =============================================================================
+argocd-create:
+	@argocd app create todos-app \
+		--insecure \
+		--project default \
+		--sync-policy auto \
+		--repo https://github.com/corbtastik/todos-app-helm.git \
+		--path src/manifests/todos-v1 \
+		--dest-server https://kubernetes.default.svc \
+		--dest-namespace todos
